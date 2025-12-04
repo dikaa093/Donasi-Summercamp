@@ -19,6 +19,7 @@
     .card{
       background:white;padding:22px;border-radius:12px;
       box-shadow:0 8px 30px rgba(0,0,0,0.1);
+      margin-bottom:20px;
     }
 
     .grid{display:grid;gap:18px}
@@ -35,7 +36,6 @@
     }
     textarea{min-height:100px}
 
-    /* Container untuk preset agar rapi */
     .chip-container{
       display:flex;
       flex-wrap:wrap;
@@ -62,7 +62,7 @@
     .btn.ghost{background:white;border:1px solid #ddd}
 
     .info{
-      background:#f1f5f9;padding:12px;border-radius:10px;margin-top:12px
+      background:#f1f5f9;padding:12px;border-radius:10px;margin-bottom:12px;
     }
   </style>
 </head>
@@ -76,6 +76,17 @@
 
     <div class="grid">
 
+      <!-- INFO PENGGUNAAN DANA DI ATAS FORM -->
+      <div>
+        <div class="info">
+          <h4>Penggunaan Dana</h4>
+          • Akomodasi SummerCamp <br>
+          • Konsumsi sehat <br>
+          • Perlengkapan aktivitas <br>
+          • Transportasi & keamanan
+        </div>
+      </div>
+
       <!-- FORM -->
       <form id="donationForm" onsubmit="return false;">
 
@@ -87,7 +98,7 @@
 
         <label>Pilih nominal</label>
 
-        <!-- CHIP SUDAH DIRAPIKAN -->
+        <!-- CHIP -->
         <div class="chip-container">
           <span class="chip" data-value="50000">Rp 50.000</span>
           <span class="chip" data-value="100000">Rp 100.000</span>
@@ -95,7 +106,7 @@
           <span class="chip" data-value="500000">Rp 500.000</span>
         </div>
 
-        <input id="amount" type="number" placeholder="Nominal lain">
+        <input id="amount" type="number" placeholder="Nominal lain (maks 100.000.000)">
 
         <label>Pesan (Opsional)</label>
         <textarea id="message"></textarea>
@@ -105,26 +116,21 @@
 
       </form>
 
-      <!-- INFO -->
-      <div>
-        <div class="info">
-          <h4>Rekening Donasi</h4>
-          PUTRI ZYFA AULIA<br>
-          Bank Mandiri<br>
-          1760004324347<br>
-          WA: 0895-3386-03441
-        </div>
-
-        <div class="info">
-          <h4>Penggunaan Dana</h4>
-          • Akomodasi SummerCamp <br>
-          • Konsumsi sehat <br>
-          • Perlengkapan aktivitas <br>
-          • Transportasi & keamanan
-        </div>
-      </div>
-
     </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="container">
+  <div class="card">
+    <h3>History Donasi</h3>
+    <div id="historyList" style="margin-top:12px;"></div>
+
+    <p id="totalDonation" style="font-weight:bold;margin-top:12px;color:green;"></p>
+
+    <button id="clearHistory" class="btn ghost" style="margin-top:12px;">
+      Hapus Semua History
+    </button>
   </div>
 </div>
 
@@ -145,7 +151,7 @@
 </div>
 
 <script>
-// PRESET NOMINAL
+// PRESET CHIP
 document.querySelectorAll('.chip').forEach(chip=>{
   chip.onclick = ()=>{
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
@@ -160,15 +166,85 @@ document.getElementById('clearBtn').onclick = ()=>{
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
 };
 
-// SHOW QR
+// ====== SIMPAN HISTORY ======
+function saveHistory(name, amount){
+  let history = JSON.parse(localStorage.getItem("donationHistory") || "[]");
+
+  history.push({
+    name: name,
+    amount: amount,
+    time: new Date().toLocaleString("id-ID")
+  });
+
+  localStorage.setItem("donationHistory", JSON.stringify(history));
+  renderHistory();
+}
+
+// ====== TAMPILKAN HISTORY ======
+function renderHistory(){
+  let history = JSON.parse(localStorage.getItem("donationHistory") || "[]");
+  let box = document.getElementById("historyList");
+  let totalBox = document.getElementById("totalDonation");
+
+  if(history.length === 0){
+    box.innerHTML = "<p style='color:gray'>Belum ada donasi masuk.</p>";
+    totalBox.textContent = "";
+    return;
+  }
+
+  box.innerHTML = history.map(h=>`
+    <div style="
+      padding:10px;
+      border-bottom:1px solid #eee;
+      margin-bottom:8px;
+    ">
+      <b>${h.name}</b><br>
+      Nominal: Rp ${Number(h.amount).toLocaleString("id-ID")}<br>
+      <small style="color:gray">${h.time}</small>
+    </div>
+  `).join("");
+
+  // Hitung total donasi
+  let total = history.reduce((sum,h) => sum + Number(h.amount), 0);
+  totalBox.textContent = "Total Donasi: Rp " + total.toLocaleString("id-ID");
+}
+
+// Muat history saat halaman dibuka
+renderHistory();
+
+// Hapus semua history
+document.getElementById("clearHistory").onclick = ()=>{
+  localStorage.removeItem("donationHistory");
+  renderHistory();
+};
+
+// DONATE BUTTON
 document.getElementById('donateBtn').onclick = ()=>{
-  let amount = document.getElementById('amount').value;
-  if(!amount || amount<=0){
+
+  let name = document.getElementById('name').value.trim();
+  let amount = Number(document.getElementById('amount').value);
+
+  if(name === ""){
+    alert("Nama harus diisi!");
+    return;
+  }
+
+  if(!amount || amount <= 0){
     alert("Masukkan nominal donasi!");
     return;
   }
+
+  if(amount > 100000000){
+    alert("Nominal maksimal adalah Rp 100.000.000");
+    return;
+  }
+
+  // Simpan ke history
+  saveHistory(name, amount);
+
+  // Tampilkan nominal ke modal QR
   document.getElementById('qrAmount').textContent =
-    "Nominal: Rp " + Number(amount).toLocaleString("id-ID");
+    "Nominal: Rp " + amount.toLocaleString("id-ID");
 
   document.getElementById('qrModal').style.display='flex';
 };
