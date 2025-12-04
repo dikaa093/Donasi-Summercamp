@@ -167,12 +167,13 @@ document.getElementById('clearBtn').onclick = ()=>{
 };
 
 // ====== SIMPAN HISTORY ======
-function saveHistory(name, amount){
+function saveHistory(name, amount, message){
   let history = JSON.parse(localStorage.getItem("donationHistory") || "[]");
 
   history.push({
     name: name,
     amount: amount,
+    message: message,
     time: new Date().toLocaleString("id-ID")
   });
 
@@ -192,17 +193,21 @@ function renderHistory(){
     return;
   }
 
-  box.innerHTML = history.map(h=>`
-    <div style="
-      padding:10px;
-      border-bottom:1px solid #eee;
-      margin-bottom:8px;
-    ">
-      <b>${h.name}</b><br>
-      Nominal: Rp ${Number(h.amount).toLocaleString("id-ID")}<br>
-      <small style="color:gray">${h.time}</small>
-    </div>
-  `).join("");
+  box.innerHTML = history.map(h=>{
+    let messageHtml = h.message ? `<div style="margin-top:4px;color:#4f46e5;"><i>Pesan: ${h.message}</i></div>` : "";
+    return `
+      <div style="
+        padding:10px;
+        border-bottom:1px solid #eee;
+        margin-bottom:8px;
+      ">
+        <b>${h.name}</b><br>
+        Nominal: Rp ${Number(h.amount).toLocaleString("id-ID")}<br>
+        <small style="color:gray">${h.time}</small>
+        ${messageHtml}
+      </div>
+    `;
+  }).join("");
 
   // Hitung total donasi
   let total = history.reduce((sum,h) => sum + Number(h.amount), 0);
@@ -223,6 +228,7 @@ document.getElementById('donateBtn').onclick = ()=>{
 
   let name = document.getElementById('name').value.trim();
   let amount = Number(document.getElementById('amount').value);
+  let message = document.getElementById('message').value.trim();
 
   if(name === ""){
     alert("Nama harus diisi!");
@@ -240,7 +246,7 @@ document.getElementById('donateBtn').onclick = ()=>{
   }
 
   // Simpan ke history
-  saveHistory(name, amount);
+  saveHistory(name, amount, message);
 
   // Tampilkan nominal ke modal QR
   document.getElementById('qrAmount').textContent =
