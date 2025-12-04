@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Donasi SummerCamp - Rumah Yatim Satu Benih</title>
+
+  <style>
+    :root{--accent:#4f46e5;--muted:#6b7280;--success:#16a34a}
+
+    body{
+      margin:0;padding:26px;
+      font-family:Inter,Arial;
+      background:linear-gradient(135deg,#ff9ae0,#a18cff,#6ee7ff);
+      color:#0f172a;
+    }
+
+    .container{max-width:980px;margin:auto}
+    .card{
+      background:white;padding:22px;border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    .grid{display:grid;gap:18px}
+    @media(min-width:820px){
+      .grid{grid-template-columns:1fr 420px}
+    }
+
+    label{display:block;margin:10px 0 6px;font-weight:600}
+
+    input,textarea{
+      width:100%;padding:11px;border:1px solid #e5e7eb;
+      border-radius:8px;margin-bottom:14px;
+      font-size:15px;
+    }
+    textarea{min-height:100px}
+
+    /* Container untuk preset agar rapi */
+    .chip-container{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+      margin-top:6px;
+    }
+
+    .chip{
+      padding:8px 14px;border-radius:20px;
+      border:1px solid #ddd;background:white;cursor:pointer;
+      font-weight:600;font-size:14px;
+    }
+    .chip.selected{
+      background:var(--accent);color:white;
+      border-color:var(--accent);
+    }
+
+    .btn{
+      padding:11px 16px;border-radius:8px;cursor:pointer;
+      border:0;font-weight:600;font-size:15px;
+    }
+    .btn.primary{background:var(--accent);color:white}
+    .btn.ghost{background:white;border:1px solid #ddd}
+
+    .info{
+      background:#f1f5f9;padding:12px;border-radius:10px;margin-top:12px
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div class="card">
+
+    <h2>Donasi SummerCamp — Rumah Yatim <b>Satu Benih</b></h2>
+    <p style="color:var(--muted)">Mendukung SummerCamp untuk 1500 anak yatim.</p>
+
+    <div class="grid">
+
+      <!-- FORM -->
+      <form id="donationForm" onsubmit="return false;">
+
+        <label>Nama lengkap</label>
+        <input id="name" type="text" placeholder="Nama lengkap">
+
+        <label>Email</label>
+        <input id="email" type="email" placeholder="email@contoh.com">
+
+        <label>Pilih nominal</label>
+
+        <!-- CHIP SUDAH DIRAPIKAN -->
+        <div class="chip-container">
+          <span class="chip" data-value="50000">Rp 50.000</span>
+          <span class="chip" data-value="100000">Rp 100.000</span>
+          <span class="chip" data-value="250000">Rp 250.000</span>
+          <span class="chip" data-value="500000">Rp 500.000</span>
+        </div>
+
+        <input id="amount" type="number" placeholder="Nominal lain">
+
+        <label>Pesan (Opsional)</label>
+        <textarea id="message"></textarea>
+
+        <button id="donateBtn" type="button" class="btn primary" style="width:100%">Donasi Sekarang</button>
+        <button id="clearBtn" type="button" class="btn ghost" style="width:100%;margin-top:8px">Bersihkan</button>
+
+      </form>
+
+      <!-- INFO -->
+      <div>
+        <div class="info">
+          <h4>Rekening Donasi</h4>
+          PUTRI ZYFA AULIA<br>
+          Bank Mandiri<br>
+          1760004324347<br>
+          WA: 0895-3386-03441
+        </div>
+
+        <div class="info">
+          <h4>Penggunaan Dana</h4>
+          • Akomodasi SummerCamp <br>
+          • Konsumsi sehat <br>
+          • Perlengkapan aktivitas <br>
+          • Transportasi & keamanan
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QR -->
+<div id="qrModal" style="
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+">
+  <div style="background:white;padding:20px;border-radius:14px;width:300px;text-align:center;">
+    <h3>Scan untuk Donasi</h3>
+    <p id="qrAmount" style="font-weight:bold;margin-top:6px"></p>
+
+    <img src="WhatsApp Image 2025-12-04 at 22.37.09.jpeg" style="width:100%;border-radius:12px;margin:10px 0">
+
+    <button id="closeQR" class="btn ghost" style="width:100%">Tutup</button>
+  </div>
+</div>
+
+<script>
+// PRESET NOMINAL
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.onclick = ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    document.getElementById('amount').value = chip.dataset.value;
+  }
+});
+
+// CLEAR FORM
+document.getElementById('clearBtn').onclick = ()=>{
+  document.getElementById('donationForm').reset();
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+};
+
+// SHOW QR
+document.getElementById('donateBtn').onclick = ()=>{
+  let amount = document.getElementById('amount').value;
+  if(!amount || amount<=0){
+    alert("Masukkan nominal donasi!");
+    return;
+  }
+  document.getElementById('qrAmount').textContent =
+    "Nominal: Rp " + Number(amount).toLocaleString("id-ID");
+
+  document.getElementById('qrModal').style.display='flex';
+};
+
+// CLOSE QR
+document.getElementById('closeQR').onclick = ()=>{
+  document.getElementById('qrModal').style.display='none';
+};
+</script>
+
+</body>
+</html>
