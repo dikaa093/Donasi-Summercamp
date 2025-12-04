@@ -128,7 +128,8 @@
 
     <p id="totalDonation" style="font-weight:bold;margin-top:12px;color:green;"></p>
 
-    <button id="clearHistory" class="btn ghost" style="margin-top:12px;">
+    <!-- Tombol hapus history -->
+    <button id="clearHistory" class="btn ghost" style="margin-top:12px; display:block;">
       Hapus Semua History
     </button>
   </div>
@@ -152,11 +153,12 @@
 
 <script>
 // PRESET CHIP
+const amountInput = document.getElementById('amount');
 document.querySelectorAll('.chip').forEach(chip=>{
   chip.onclick = ()=>{
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
     chip.classList.add('selected');
-    document.getElementById('amount').value = chip.dataset.value;
+    amountInput.value = chip.dataset.value;
   }
 });
 
@@ -217,15 +219,20 @@ function renderHistory(){
 // Muat history saat halaman dibuka
 renderHistory();
 
-// Hapus semua history
+// ===== DELETE HISTORY DENGAN PASSWORD =====
 document.getElementById("clearHistory").onclick = ()=>{
-  localStorage.removeItem("donationHistory");
-  renderHistory();
+  const pw = prompt("Masukkan password admin:");
+  if(pw === "admin123"){   // ganti password sesuai kebutuhan
+    localStorage.removeItem("donationHistory");
+    renderHistory();
+    alert("History berhasil dihapus!");
+  } else if(pw !== null){
+    alert("Password salah!");
+  }
 };
 
 // DONATE BUTTON
 document.getElementById('donateBtn').onclick = ()=>{
-
   let name = document.getElementById('name').value.trim();
   let amount = Number(document.getElementById('amount').value);
   let message = document.getElementById('message').value.trim();
