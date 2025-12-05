@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="id">
 <head>
@@ -7,31 +8,76 @@
 
   <style>
     :root{--accent:#4f46e5;--muted:#6b7280;--success:#16a34a}
-    body{margin:0;padding:26px;font-family:Inter,Arial;background:linear-gradient(135deg,#ff9ae0,#a18cff,#6ee7ff);color:#0f172a}
+
+    body{
+      margin:0;padding:26px;
+      font-family:Inter,Arial;
+      background:linear-gradient(135deg,#ff9ae0,#a18cff,#6ee7ff);
+      color:#0f172a;
+    }
+
     .container{max-width:980px;margin:auto}
-    .card{background:white;padding:22px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.1);margin-bottom:20px}
+    .card{
+      background:white;padding:22px;border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.1);
+      margin-bottom:20px;
+    }
+
     .grid{display:grid;gap:18px}
-    @media(min-width:820px){.grid{grid-template-columns:1fr 420px}}
+    @media(min-width:820px){
+      .grid{grid-template-columns:1fr 420px}
+    }
+
     label{display:block;margin:10px 0 6px;font-weight:600}
-    input,textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:14px;font-size:15px}
+
+    input,textarea{
+      width:100%;padding:11px;border:1px solid #e5e7eb;
+      border-radius:8px;margin-bottom:14px;
+      font-size:15px;
+    }
     textarea{min-height:100px}
-    .chip-container{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;margin-top:6px}
-    .chip{padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:white;cursor:pointer;font-weight:600;font-size:14px}
-    .chip.selected{background:var(--accent);color:white;border-color:var(--accent)}
-    .btn{padding:11px 16px;border-radius:8px;cursor:pointer;border:0;font-weight:600;font-size:15px}
+
+    .chip-container{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+      margin-top:6px;
+    }
+
+    .chip{
+      padding:8px 14px;border-radius:20px;
+      border:1px solid #ddd;background:white;cursor:pointer;
+      font-weight:600;font-size:14px;
+    }
+    .chip.selected{
+      background:var(--accent);color:white;
+      border-color:var(--accent);
+    }
+
+    .btn{
+      padding:11px 16px;border-radius:8px;cursor:pointer;
+      border:0;font-weight:600;font-size:15px;
+    }
     .btn.primary{background:var(--accent);color:white}
     .btn.ghost{background:white;border:1px solid #ddd}
-    .info{background:#f1f5f9;padding:12px;border-radius:10px;margin-bottom:12px}
+
+    .info{
+      background:#f1f5f9;padding:12px;border-radius:10px;margin-bottom:12px;
+    }
   </style>
 </head>
 
 <body>
 <div class="container">
   <div class="card">
+
     <h2>Donasi SummerCamp — Rumah Yatim <b>Satu Benih</b></h2>
     <p style="color:var(--muted)">Mendukung SummerCamp untuk 1500 anak yatim.</p>
 
     <div class="grid">
+
+      <!-- INFO PENGGUNAAN DANA DI ATAS FORM -->
       <div>
         <div class="info">
           <h4>Penggunaan Dana</h4>
@@ -42,13 +88,18 @@
         </div>
       </div>
 
+      <!-- FORM -->
       <form id="donationForm" onsubmit="return false;">
+
         <label>Nama lengkap</label>
         <input id="name" type="text" placeholder="Nama lengkap">
+
         <label>Email</label>
         <input id="email" type="email" placeholder="email@contoh.com">
+
         <label>Pilih nominal</label>
 
+        <!-- CHIP -->
         <div class="chip-container">
           <span class="chip" data-value="50000">Rp 50.000</span>
           <span class="chip" data-value="100000">Rp 100.000</span>
@@ -57,24 +108,35 @@
         </div>
 
         <input id="amount" type="number" placeholder="Nominal lain (maks 100.000.000)">
+
         <label>Pesan (Opsional)</label>
         <textarea id="message"></textarea>
 
         <button id="donateBtn" type="button" class="btn primary" style="width:100%">Donasi Sekarang</button>
         <button id="clearBtn" type="button" class="btn ghost" style="width:100%;margin-top:8px">Bersihkan</button>
+
       </form>
+
     </div>
   </div>
 </div>
 
+<!-- HISTORY -->
 <div class="container">
   <div class="card">
     <h3>History Donasi</h3>
     <div id="historyList" style="margin-top:12px;"></div>
+
     <p id="totalDonation" style="font-weight:bold;margin-top:12px;color:green;"></p>
+
+    <!-- Tombol hapus history -->
+    <button id="clearHistory" class="btn ghost" style="margin-top:12px; display:block;">
+      Hapus Semua History
+    </button>
   </div>
 </div>
 
+<!-- MODAL QR -->
 <div id="qrModal" style="
   display:none;position:fixed;inset:0;z-index:999;
   background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
@@ -83,113 +145,129 @@
   <div style="background:white;padding:20px;border-radius:14px;width:300px;text-align:center;">
     <h3>Scan untuk Donasi</h3>
     <p id="qrAmount" style="font-weight:bold;margin-top:6px"></p>
+
     <img src="WhatsApp Image 2025-12-04 at 22.37.09.jpeg" style="width:100%;border-radius:12px;margin:10px 0">
+
     <button id="closeQR" class="btn ghost" style="width:100%">Tutup</button>
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  // Config Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyAEyt2NDnzMscUexaLjZQImF9_oOJ2iQyc",
-    authDomain: "donasi-4d4f6.firebaseapp.com",
-    projectId: "donasi-4d4f6",
-    storageBucket: "donasi-4d4f6.firebasestorage.app",
-    messagingSenderId: "472418288332",
-    appId: "1:472418288332:web:8c350a65a1749d3287b869",
-    measurementId: "G-MF6KL21QB4"
-  };
+// PRESET CHIP
+const amountInput = document.getElementById('amount');
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.onclick = ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    amountInput.value = chip.dataset.value;
+  }
+});
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const analytics = firebase.analytics();
+// CLEAR FORM
+document.getElementById('clearBtn').onclick = ()=>{
+  document.getElementById('donationForm').reset();
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+};
 
-  const amountInput = document.getElementById('amount');
+// ====== SIMPAN HISTORY ======
+function saveHistory(name, amount, message){
+  let history = JSON.parse(localStorage.getItem("donationHistory") || "[]");
 
-  // Chip selection
-  document.querySelectorAll('.chip').forEach(chip => {
-    chip.onclick = () => {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      chip.classList.add('selected');
-      amountInput.value = chip.dataset.value;
-    }
+  history.push({
+    name: name,
+    amount: amount,
+    message: message,
+    time: new Date().toLocaleString("id-ID")
   });
 
-  // Clear form
-  document.getElementById('clearBtn').onclick = () => {
-    document.getElementById('donationForm').reset();
-    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
-  };
-
-  // Save donation to Firestore
-  function saveHistory(name, amount, message){
-    db.collection("donations").add({
-      name, amount, message,
-      time: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(()=> renderHistory())
-      .catch(err => alert("Gagal menyimpan donasi"));
-  }
-
-  // Render history from Firestore
-  function renderHistory(){
-    const box = document.getElementById("historyList");
-    const totalBox = document.getElementById("totalDonation");
-
-    db.collection("donations").orderBy("time","desc").get().then(snapshot=>{
-      const history = snapshot.docs.map(doc=>({...doc.data(), id: doc.id}));
-
-      if(history.length === 0){
-        box.innerHTML = "<p style='color:gray'>Belum ada donasi masuk.</p>";
-        totalBox.textContent = "";
-        return;
-      }
-
-      box.innerHTML = history.map(h=>{
-        let msg = h.message ? `<div style="color:#4f46e5"><i>Pesan: ${h.message}</i></div>` : "";
-        let date = h.time ? h.time.toDate().toLocaleString("id-ID") : "";
-        return `<div style="padding:10px;border-bottom:1px solid #eee">
-                  <b>${h.name}</b><br>
-                  Nominal: Rp ${Number(h.amount).toLocaleString("id-ID")}<br>
-                  <small>${date}</small>
-                  ${msg}
-                </div>`;
-      }).join("");
-
-      const total = history.reduce((sum,h)=>sum + Number(h.amount),0);
-      totalBox.textContent = "Total Donasi: Rp " + total.toLocaleString("id-ID");
-    });
-  }
-
+  localStorage.setItem("donationHistory", JSON.stringify(history));
   renderHistory();
+}
 
-  // Donate button
-  document.getElementById('donateBtn').onclick = () => {
-    let name = document.getElementById('name').value.trim();
-    let amount = Number(amountInput.value);
-    let message = document.getElementById('message').value.trim();
+// ====== TAMPILKAN HISTORY ======
+function renderHistory(){
+  let history = JSON.parse(localStorage.getItem("donationHistory") || "[]");
+  let box = document.getElementById("historyList");
+  let totalBox = document.getElementById("totalDonation");
 
-    if(!name){ alert("Nama harus diisi!"); return; }
-    if(!amount || amount <= 0){ alert("Masukkan nominal donasi!"); return; }
-    if(amount > 100000000){ alert("Nominal maksimal Rp 100.000.000"); return; }
+  if(history.length === 0){
+    box.innerHTML = "<p style='color:gray'>Belum ada donasi masuk.</p>";
+    totalBox.textContent = "";
+    return;
+  }
 
-    saveHistory(name, amount, message);
+  box.innerHTML = history.map(h=>{
+    let messageHtml = h.message ? `<div style="margin-top:4px;color:#4f46e5;"><i>Pesan: ${h.message}</i></div>` : "";
+    return `
+      <div style="
+        padding:10px;
+        border-bottom:1px solid #eee;
+        margin-bottom:8px;
+      ">
+        <b>${h.name}</b><br>
+        Nominal: Rp ${Number(h.amount).toLocaleString("id-ID")}<br>
+        <small style="color:gray">${h.time}</small>
+        ${messageHtml}
+      </div>
+    `;
+  }).join("");
 
-    document.getElementById('qrAmount').textContent = "Nominal: Rp " + amount.toLocaleString("id-ID");
-    document.getElementById('qrModal').style.display = 'flex';
-  };
+  // Hitung total donasi
+  let total = history.reduce((sum,h) => sum + Number(h.amount), 0);
+  totalBox.textContent = "Total Donasi: Rp " + total.toLocaleString("id-ID");
+}
 
-  // Close QR
-  document.getElementById('closeQR').onclick = () => {
-    document.getElementById('qrModal').style.display = 'none';
-  };
-});
+// Muat history saat halaman dibuka
+renderHistory();
+
+// ===== DELETE HISTORY DENGAN PASSWORD =====
+document.getElementById("clearHistory").onclick = ()=>{
+  const pw = prompt("Masukkan password admin:");
+  if(pw === "satubenih123"){   // ganti password sesuai kebutuhan
+    localStorage.removeItem("donationHistory");
+    renderHistory();
+    alert("History berhasil dihapus!");
+  } else if(pw !== null){
+    alert("Password salah!");
+  }
+};
+
+// DONATE BUTTON
+document.getElementById('donateBtn').onclick = ()=>{
+  let name = document.getElementById('name').value.trim();
+  let amount = Number(document.getElementById('amount').value);
+  let message = document.getElementById('message').value.trim();
+
+  if(name === ""){
+    alert("Nama harus diisi!");
+    return;
+  }
+
+  if(!amount || amount <= 0){
+    alert("Masukkan nominal donasi!");
+    return;
+  }
+
+  if(amount > 100000000){
+    alert("Nominal maksimal adalah Rp 100.000.000");
+    return;
+  }
+
+  // Simpan ke history
+  saveHistory(name, amount, message);
+
+  // Tampilkan nominal ke modal QR
+  document.getElementById('qrAmount').textContent =
+    "Nominal: Rp " + amount.toLocaleString("id-ID");
+
+  document.getElementById('qrModal').style.display='flex';
+};
+
+// CLOSE QR
+document.getElementById('closeQR').onclick = ()=>{
+  document.getElementById('qrModal').style.display='none';
+};
 </script>
+
 </body>
 </html>
