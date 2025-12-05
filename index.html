@@ -88,13 +88,14 @@
   </div>
 </div>
 
-<!-- Firebase SDK (compat untuk browser) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 
 <script>
-  // Ganti config ini dengan config Firebase-mu
+window.addEventListener('DOMContentLoaded', () => {
+  // Config Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAEyt2NDnzMscUexaLjZQImF9_oOJ2iQyc",
     authDomain: "donasi-4d4f6.firebaseapp.com",
@@ -105,39 +106,38 @@
     measurementId: "G-MF6KL21QB4"
   };
 
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const analytics = firebase.analytics();
 
-  // CHIP SELECTION
   const amountInput = document.getElementById('amount');
-  document.querySelectorAll('.chip').forEach(chip=>{
-    chip.onclick = ()=>{
-      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+
+  // Chip selection
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
       amountInput.value = chip.dataset.value;
     }
   });
 
-  // CLEAR FORM
-  document.getElementById('clearBtn').onclick = ()=>{
+  // Clear form
+  document.getElementById('clearBtn').onclick = () => {
     document.getElementById('donationForm').reset();
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
   };
 
-  // SAVE DONATION TO FIRESTORE
+  // Save donation to Firestore
   function saveHistory(name, amount, message){
     db.collection("donations").add({
       name, amount, message,
       time: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => renderHistory())
-      .catch(err => {
-        console.error(err);
-        alert("Gagal menyimpan donasi");
-      });
+    }).then(()=> renderHistory())
+      .catch(err => alert("Gagal menyimpan donasi"));
   }
 
-  // RENDER HISTORY FROM FIRESTORE
+  // Render history from Firestore
   function renderHistory(){
     const box = document.getElementById("historyList");
     const totalBox = document.getElementById("totalDonation");
@@ -169,36 +169,27 @@
 
   renderHistory();
 
-  // DONATE BUTTON
-  document.getElementById('donateBtn').onclick = ()=>{
+  // Donate button
+  document.getElementById('donateBtn').onclick = () => {
     let name = document.getElementById('name').value.trim();
-    let amount = Number(document.getElementById('amount').value);
+    let amount = Number(amountInput.value);
     let message = document.getElementById('message').value.trim();
 
-    if(name === ""){
-      alert("Nama harus diisi!");
-      return;
-    }
-    if(!amount || amount <= 0){
-      alert("Masukkan nominal donasi!");
-      return;
-    }
-    if(amount > 100000000){
-      alert("Nominal maksimal adalah Rp 100.000.000");
-      return;
-    }
+    if(!name){ alert("Nama harus diisi!"); return; }
+    if(!amount || amount <= 0){ alert("Masukkan nominal donasi!"); return; }
+    if(amount > 100000000){ alert("Nominal maksimal Rp 100.000.000"); return; }
 
     saveHistory(name, amount, message);
 
-    document.getElementById('qrAmount').textContent =
-      "Nominal: Rp " + amount.toLocaleString("id-ID");
-    document.getElementById('qrModal').style.display='flex';
+    document.getElementById('qrAmount').textContent = "Nominal: Rp " + amount.toLocaleString("id-ID");
+    document.getElementById('qrModal').style.display = 'flex';
   };
 
-  // CLOSE QR
-  document.getElementById('closeQR').onclick = ()=>{
-    document.getElementById('qrModal').style.display='none';
+  // Close QR
+  document.getElementById('closeQR').onclick = () => {
+    document.getElementById('qrModal').style.display = 'none';
   };
+});
 </script>
 </body>
 </html>
